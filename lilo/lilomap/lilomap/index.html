@@ -14,7 +14,7 @@
 </head>
 <body>
   <label for="searchQuery">Search:</label>
-  <input type="text" id="searchQuery" placeholder="Enter search query">
+  <input type="text" id="searchQuery" placeholder="Enter the location">
   <button id="searchButton" onclick="performSearch()">Search</button>
 
   <div id="map"></div>
@@ -49,11 +49,20 @@
           var lat = coordinates.lat;
           var lon = coordinates.lng;
 
-          // Create a marker at the search location
-          searchMarker = L.marker([lat, lon]).addTo(map);
+          // Create a draggable marker at the search location
+          searchMarker = L.marker([lat, lon], { draggable: true }).addTo(map);
 
           // Pan and zoom the map to the search location
           map.setView([lat, lon], 12);
+
+          // Update marker position on dragend
+          searchMarker.on('dragend', function (event) {
+            var marker = event.target;
+            var position = marker.getLatLng();
+            var lat = position.lat;
+            var lon = position.lng;
+            console.log('Marker position:', lat, lon);
+          });
         } else {
           alert('No results found for the search query.');
         }
