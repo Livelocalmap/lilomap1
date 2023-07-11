@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Simple Leaflet Map - Search</title>
+<meta charset="utf-8" />
+<!-- Leaflet CSS/js -->
+<link rel="stylesheet" type="text/css" href="lib/leaflet/leaflet.css">
+<style>
+  #map {
+    width: 100%;
+    height: 100vh;
+  }
+</style>
+</head>
+<body>
+  <label for="searchQuery">Search:</label>
+  <input type="text" id="searchQuery" placeholder="Enter search query">
+  <button id="searchButton" onclick="performSearch()">Search</button>
+
+  <div id="map"></div>
+
+  <script type="text/javascript" src="lib/leaflet/leaflet.js"></script>
+  <script type="text/javascript" src="lib/Control.Geocoder.js"></script>
+
+  <script>
+    var map = new L.Map('map').setView([8.4698, 76.9714], 8);
+    var mapLink = '<a href="http://20.235.80.243">OpenStreetMap</a>';
+    L.tileLayer('http://20.235.80.243/hot/{z}/{x}/{y}.png', {
+      attribution: 'Map data &copy; ' + mapLink,
+      maxZoom: 18
+    }).addTo(map);
+
+    var searchMarker;
+
+    // Function to perform the search
+    function performSearch() {
+      var searchQuery = document.getElementById('searchQuery').value.trim();
+      
+      // Clear existing markers
+      if (typeof searchMarker !== 'undefined') {
+        map.removeLayer(searchMarker);
+      }
+
+      // Perform the geocoding/search
+      L.Control.Geocoder.nominatim().geocode(searchQuery, function (results) {
+        if (results && results.length > 0) {
+          var result = results[0];
+          var coordinates = result.center;
+          var lat = coordinates.lat;
+          var lon = coordinates.lng;
+
+          // Create a marker at the search location
+          searchMarker = L.marker([lat, lon]).addTo(map);
+
+          // Pan and zoom the map to the search location
+          map.setView([lat, lon], 12);
+        } else {
+          alert('No results found for the search query.');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
